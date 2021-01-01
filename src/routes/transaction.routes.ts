@@ -7,12 +7,11 @@ import GetBalanceService from '../services/GetBalance.service';
 const transactionRouter = Router();
 
 const transactionsRepository = new TransactionsRepository();
+const getBalance = new GetBalanceService(transactionsRepository);
 
 transactionRouter.get('/', (request, response) => {
   try {
     const transactions = transactionsRepository.all();
-
-    const getBalance = new GetBalanceService(transactionsRepository);
 
     const balance = getBalance.execute(transactions);
 
@@ -28,11 +27,19 @@ transactionRouter.post('/', (request, response) => {
   try {
     const { title, value, type } = request.body;
 
+    const transactions = transactionsRepository.all();
+
+    const balance = getBalance.execute(transactions);
+
     const createTransaction = new CreateTransactionService(
       transactionsRepository,
     );
 
-    const transaction = createTransaction.execute({ title, value, type });
+    const transaction = createTransaction.execute(balance, {
+      title,
+      value,
+      type,
+    });
 
     return response.json(transaction);
   } catch (err) {
