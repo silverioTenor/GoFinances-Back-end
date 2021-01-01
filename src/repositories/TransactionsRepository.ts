@@ -15,16 +15,30 @@ interface Request {
 class TransactionsRepository {
   private transactions: Transaction[];
 
+  private balance: Balance;
+
   constructor() {
     this.transactions = [];
+    this.balance = { income: 0, outcome: 0, total: 0 };
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
-  public getBalance(): Balance {
-    // TODO
+  public getBalance(val1: number[], val2: number[]): Balance {
+    const income = val1.reduce((x, v) => x + v, 0);
+    const outcome = val2.reduce((x, v) => x + v, 0);
+
+    const total = income - outcome;
+
+    this.balance = {
+      income,
+      outcome,
+      total,
+    };
+
+    return this.balance;
   }
 
   public create({ title, value, type }: Request): Transaction {

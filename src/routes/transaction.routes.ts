@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import CreateTransactionService from '../services/CreateTransaction.service';
+import GetBalanceService from '../services/GetBalance.service';
 
 const transactionRouter = Router();
 
@@ -9,8 +10,15 @@ const transactionsRepository = new TransactionsRepository();
 
 transactionRouter.get('/', (request, response) => {
   try {
-    // TODO
-    return '';
+    const transactions = transactionsRepository.all();
+
+    const getBalance = new GetBalanceService(transactionsRepository);
+
+    const balance = getBalance.execute(transactions);
+
+    const generalBalance = { transactions, balance };
+
+    return response.json(generalBalance);
   } catch (err) {
     return response.status(400).json({ error: err.message });
   }
